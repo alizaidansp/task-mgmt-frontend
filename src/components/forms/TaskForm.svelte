@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher,onMount } from 'svelte';
-import { getUser,getUsers } from '../../lib/api';
+import { getUsers } from '../../lib/api';
     
     export let editingTaskId = null;
     export let users = [];
@@ -21,7 +21,6 @@ import { getUser,getUsers } from '../../lib/api';
     onMount(async () => {
     try {
         users = await getUsers();
-        console.log('Users fetched:', users);
     } catch (error) {
         console.error('Error while fetching users:', error);
     }
@@ -68,7 +67,7 @@ import { getUser,getUsers } from '../../lib/api';
             >
                 <option value="" disabled>Select User</option>
                 {#each users as user}
-                    <option value={user.username}>{user.name}</option>
+                    <option value={user.user_id} class="text-capitalize">{user.family_name} {user.given_name}</option>
                 {/each}
             </select>
         </div>

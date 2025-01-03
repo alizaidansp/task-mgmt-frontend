@@ -1,43 +1,42 @@
 <script>
-    import { login } from '../lib/api';
+    import { login } from '../lib/api'; // Import the admin login function
     import { user, isAuthenticated } from '../lib/store';
-    import { push } from 'svelte-spa-router';
     import { logger } from '../lib/utils/logger';
+    import { handleRoleRedirect } from '../lib/utils/auth';
 
     let email = '';
     let password = '';
     let error = '';
+    let isAdmin = false; // Variable to track whether the checkbox is checked
 
- async function handleLogin() {
-    try {
-        logger.info('Attempting login with email:', { email });
-        
-        // Make the login request
-        const response = await login(email, password);
+    // Handle the login based on whether admin checkbox is checked
+    async function handleLogin() {
+        try {
+            logger.info('Attempting login with email:', { email });
 
-        // Update the `user` store with user details
-        user.set({
-            token: response.access_token,
-            username: response.user.username,
-            email: response.user.email,
-            fullName: `${response.user.given_name} ${response.user.family_name}`,
-            userGroup: response.user.user_group
-        });
+            // Select login function based on isAdmin
+            const response = isAdmin ? await login(email, password,true) : await login(email, password,false);
 
-        // Update the authentication status
-        isAuthenticated.set(true);
+            // Update the `user` store with user details
+            user.set({
+                token: response.access_token,
+                username: response.user.username,
+                email: response.user.email,
+                fullName: `${response.user.given_name} ${response.user.family_name}`,
+                userGroup: response.user.user_group
+            });
 
-        // Persist the token in localStorage
-        // localStorage.setItem('token', response.access_token);
+            // Update the authentication status
+            isAuthenticated.set(true);
 
-        // Navigate to the dashboard
-        push('/dashboard');
-    } catch (err) {
-        logger.error('Login failed:', err);
-        error = 'Login failed. Please try again.';
+            // Redirect based on user role
+            handleRoleRedirect(response.user.user_group, 'default');
+
+        } catch (err) {
+            logger.error('Login failed:', err);
+            error = 'Login failed. Please try again.';
+        }
     }
-}
-
 </script>
 
 <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -47,13 +46,13 @@
                 Sign in to your account
             </h2>
         </div>
-        
+
         {#if error}
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block sm:inline">{error}</span>
             </div>
         {/if}
-        
+
         <form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin}>
             <div class="rounded-md shadow-sm space-y-4">
                 <div>
@@ -79,6 +78,18 @@
                         class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                         placeholder="Password"
                     />
+                </div>
+
+                <div class="flex items-center">
+                    <input
+                        id="isAdmin"
+                        type="checkbox"
+                        bind:checked={isAdmin} 
+                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                    <label for="isAdmin" class="ml-2 block text-sm text-gray-900">
+                        Login as Admin
+                    </label>
                 </div>
             </div>
 

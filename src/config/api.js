@@ -3,6 +3,7 @@ export const API_CONFIG = {
     endpoints: {
         auth: {
             login: 'admin/auth/login',
+            user_login: 'user/auth/login',
             info: 'admin/auth/'
         },
         tasks: {
@@ -15,10 +16,13 @@ export const API_CONFIG = {
         },
         user_mgmt: {
             list: 'admin/user-mgmt/users',
-            user: (assignedTo) => `admin/user-mgmt/users/${assignedTo}`
-        },
-        users: {
+            user: (assignedTo) => `admin/user-mgmt/users/${assignedTo}`,
+            update: (userId) => `admin/user-mgmt/users/${userId}/`,
             createTeamMember: 'admin/user-mgmt/create-team-member'
-        }
+
+
+
+        },
+      
     }
 };

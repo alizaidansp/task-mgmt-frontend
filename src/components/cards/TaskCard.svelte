@@ -1,5 +1,4 @@
 <script>
-    import { user } from './../../lib/store.js';
     import { createEventDispatcher } from 'svelte';
     import {getUser} from '../../lib/api.js';
     export let task;

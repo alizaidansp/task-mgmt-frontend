@@ -3,9 +3,9 @@ import { logger } from './utils/logger';
 import { user } from '../lib/store'; // Import user store to get the token
 import { get } from 'svelte/store'; 
 
-export async function login(email, password) {
+export async function login(email, password,is_admin=false) {
     try {
-        const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.login}`;
+        const url = is_admin ?`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.login}`:`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.user_login}`;
         logger.info('Login request to:', { url });
 
         const response = await fetch(url, {
@@ -163,6 +163,9 @@ const token = currentUser?.token; // Retrieve the token from the user object
 
 export async function updateTask(taskId, assignedTo,updatedTask) {
     try {
+        alert(assignedTo);
+        alert(updatedTask.assigned_to);
+
         const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.tasks.update(taskId,assignedTo)}`;
         
         // Check if the token exists
@@ -288,3 +291,74 @@ export async function getUsers() {
     }
 }
 
+export async function createUser(userData) {
+    try {
+        const token = currentUser?.token; // Retrieve the token from the user object
+
+        const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.user_mgmt.createTeamMember}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to create user');
+        }
+        return data;
+    } catch (error) {
+        logger.error('Create user error:', error);
+        throw error;
+    }
+}
+
+
+export async function updateUser(userId, updatedUser) {
+    try {
+
+        const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.user_mgmt.update(userId)}`;
+
+        if (!currentUser || !currentUser.token) {
+            alert('No authentication token found');
+            throw new Error('Authentication required');
+        }
+
+        const token = currentUser.token;
+   // Remove userId from updatedUser if it exists
+        if (updatedUser.user_id) {
+            delete updatedUser.user_id;
+        }
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+        });
+
+        console.log('response', response);
+
+        const data = await response.json();
+
+        logger.info('Update user response:', {
+            status: response.status,
+            statusText: response.statusText,
+            data,
+        });
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to update user');
+        }
+
+        return data;
+    } catch (error) {
+        logger.error('Update user error:', error);
+        throw error;
+    }
+}

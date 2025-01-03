@@ -3,10 +3,13 @@ import { writable } from 'svelte/store';
 // Check if there's a user or token stored in localStorage
 const storedUser = localStorage.getItem('user');
 
+export const page = writable('task-management');
+
 // Initialize the stores based on what's in localStorage
 export const user = writable(storedUser ? JSON.parse(storedUser) : null);
 export const isAuthenticated = writable(false); // Authenticated if user or token exists
 export const tasks = writable([]);
+export const users = writable([]);
 
 // Persist user data and token in localStorage when they change
 user.subscribe(value => {
