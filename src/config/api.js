@@ -10,9 +10,12 @@ export const API_CONFIG = {
             list: 'admin/task-mgmt/tasks',
             create: 'admin/task-mgmt/create',
             delete: (taskId, assignedTo) => `admin/task-mgmt/tasks/${taskId}/${assignedTo}`,
-            update: (taskId, assignedTo) => `admin/task-mgmt/tasks/${taskId}/${assignedTo}`,
+            update: (taskId, assignedTo) => `admin/task-mgmt/tasks/${taskId}`,
             get: (taskId, assignedTo) => `admin/task-mgmt/tasks/${taskId}/${assignedTo}`,
-            listMy: (assignedTo) => `admin/task-mgmt/tasks/${assignedTo}`
+            listMy: (assignedTo) => `user/task-mgmt/tasks/${assignedTo}`,
+            updateMy: (taskId, assignedTo) => `user/task-mgmt/tasks/${taskId}`,
+
+            AdminlistTaskByUser: (assignedTo) => `admin/task-mgmt/tasks/${assignedTo}`
         },
         user_mgmt: {
             list: 'admin/user-mgmt/users',

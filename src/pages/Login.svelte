@@ -3,19 +3,32 @@
     import { user, isAuthenticated } from '../lib/store';
     import { logger } from '../lib/utils/logger';
     import { handleRoleRedirect } from '../lib/utils/auth';
+    import LoadingSpinner from '../components/loaders/loading-spinner.svelte';
+    import { onMount } from 'svelte';
+
+    onMount(() => {
+        if ($isAuthenticated) {
+            handleRoleRedirect();
+        }
+      
+    });
 
     let email = '';
     let password = '';
     let error = '';
     let isAdmin = false; // Variable to track whether the checkbox is checked
+    let isLoading = false; // Variable to track loading state
 
     // Handle the login based on whether admin checkbox is checked
     async function handleLogin() {
+        isLoading = true; // Start loading
+        error = ''; // Clear any previous error messages
+
         try {
             logger.info('Attempting login with email:', { email });
 
             // Select login function based on isAdmin
-            const response = isAdmin ? await login(email, password,true) : await login(email, password,false);
+            const response = isAdmin ? await login(email, password, true) : await login(email, password, false);
 
             // Update the `user` store with user details
             user.set({
@@ -30,14 +43,17 @@
             isAuthenticated.set(true);
 
             // Redirect based on user role
-            handleRoleRedirect(response.user.user_group, 'default');
+            handleRoleRedirect('default');
 
         } catch (err) {
             logger.error('Login failed:', err);
             error = 'Login failed. Please try again.';
+        } finally {
+            isLoading = false; // End loading
         }
     }
 </script>
+
 
 <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
@@ -97,8 +113,13 @@
                 <button 
                     type="submit"
                     class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                    disabled={isLoading} 
                 >
-                    Sign in
+                    {#if isLoading}
+                       <LoadingSpinner />
+                    {:else}
+                        Sign in
+                    {/if}
                 </button>
             </div>
         </form>

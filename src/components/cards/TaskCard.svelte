@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import {getUser} from '../../lib/api.js';
+  import { user } from "../../lib/store";
+
     export let task;
     const dispatch = createEventDispatcher();
     
@@ -20,9 +22,16 @@
 
     async function fetchUsername(assignedToId) {
         try {
-            let user = await getUser(assignedToId); // Assuming getUser fetches the user
+            if($user.userGroup == "Admins"){
+
+                let user = await getUser(assignedToId); // Assuming getUser fetches the user
             assignedToName = user.name;  // Update the name
             console.log('User fetched:', user);
+            }else{
+                assignedToName = $user.fullName;  // Update the name
+
+            }
+           
         } catch (error) {
             console.error(error);
             assignedToName = 'Error fetching user';  // Fallback on error
@@ -35,6 +44,11 @@
     onMount(() => {
         fetchUsername(task.assigned_to); // Fetch username when the task is assigned
     });
+
+      // Reactively fetch username whenever task.assigned_to changes
+      $: if (task?.assigned_to) {
+        fetchUsername(task.assigned_to);
+    }
 </script>
 
 <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
@@ -81,6 +95,9 @@
                 Edit
             </button>
             
+
+            {#if $user.userGroup == "Admins"}
+           
             <button
                 on:click={() => dispatch('delete')}
                 class="flex-1 inline-flex justify-center items-center px-3 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
@@ -91,6 +108,7 @@
                 </svg>
                 Delete
             </button>
+            {/if}
         </div>
     </div>
 </div>

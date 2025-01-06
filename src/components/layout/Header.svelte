@@ -1,14 +1,15 @@
 <script>
-    import { user } from '../../lib/store';
-    import { push } from 'svelte-spa-router';
+    import { user,isAuthenticated } from '../../lib/store';
     import { clickOutside } from '../../lib/utils/clickOutside';
     
     let showDropdown = false;
 
     function handleLogout() {
-        // Clear user data and redirect to login
-        $user = null;
-        push('/login');
+        user.set(null); // Clear the user store
+        isAuthenticated.set(false); // Reset authentication status
+        localStorage.clear(); // Clear localStorage
+        window.location.href = '/login'; // Redirect to login
+    
     }
 </script>
 
@@ -27,7 +28,7 @@
                 on:click={() => showDropdown = !showDropdown}
                 class="flex items-center space-x-3 focus:outline-none"
             >
-                <span class="text-sm font-medium text-gray-700">{$user?.name || 'User'}</span>
+                <span class="text-sm font-medium text-gray-700">{$user?.fullName || 'User'}</span>
                 <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -47,6 +48,8 @@
                         </svg>
                         Settings
                     </a>
+
+                    {#if $isAuthenticated}
                     <button
                         on:click={handleLogout}
                         class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
@@ -56,7 +59,10 @@
                         </svg>
                         Logout
                     </button>
+                    {/if}
+
                 </div>
+
             {/if}
         </div>
     </div>

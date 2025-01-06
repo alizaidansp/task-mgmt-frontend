@@ -29,6 +29,6 @@ export function handleRoleRedirect(routeName = "default") {
     push(routes.default); // Fallback to the default route for the role
   } else {
     console.error("No valid route found for role:", role);
-    push("/login"); // Fallback to login
+    push("/login"); //  Fallback to login
   }
 }

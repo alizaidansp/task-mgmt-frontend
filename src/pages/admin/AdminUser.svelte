@@ -7,8 +7,10 @@
     import Sidebar from '../../components/layout/Sidebar.svelte';
     import Header from '../../components/layout/Header.svelte';
     import { handleRoleRedirect } from '../../lib/utils/auth';
+	import InfoToast from '../../components/toasts/InfoToast.svelte';
 
     let editingUserId = null;
+    let isLoading=false;
     let statusMessage = '';
     let currentUser = {
         family_name: '',
@@ -37,6 +39,7 @@
     async function handleUserSubmit(event) {
         try {
             const userData = event.detail;
+            isLoading=true;
             if (editingUserId) {
                 // Handle user update logic
                 await updateUser(editingUserId,userData);
@@ -52,6 +55,10 @@
         } catch (error) {
             console.error('Failed to save user:', error);
             statusMessage = 'Failed to save user. Please try again.';
+            setTimeout(() => (statusMessage = ''), 3000);
+
+        }finally{
+            isLoading=false;    
         }
     }
 
@@ -77,11 +84,9 @@
                     <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
                 </div>
 
-                {#if statusMessage}
-                    <div class="mb-6 p-4 rounded-lg bg-green-50/50 backdrop-blur-sm border border-green-200">
-                        <p class="text-green-700">{statusMessage}</p>
-                    </div>
-                {/if}
+               <InfoToast
+               statusMessage={statusMessage}
+               />
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1">
@@ -89,6 +94,7 @@
                             <UserForm 
                                 {editingUserId}
                                 user={currentUser}
+                                isLoading={isLoading}
                                 on:submit={handleUserSubmit}
                             />
                         </div>

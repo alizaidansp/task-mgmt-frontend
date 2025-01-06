@@ -2,25 +2,53 @@
   import { page } from "../../lib/store";
   import { roleRoutes } from "../../lib/utils/roleRoutes";
   import { link } from "svelte-spa-router";
+  import { user } from '../../lib/store';
+ 
 
-  const menuItems = [
-    {
-      id: "task-management",
-      label: "Task Management",
-      icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+let menuItems = [];
+let userGroupMenuItems, adminMenuItems;
+
+adminMenuItems = [
+  {
+    id: "task-management",
+    label: "Task Management",
+    icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>`,
-      path: roleRoutes.Admins.default,
-    },
-    {
-      id: "user-management",
-      label: "User Management",
-      icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    path: roleRoutes.Admins.default,
+  },
+  {
+    id: "user-management",
+    label: "User Management",
+    icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>`,
-      path: roleRoutes.Admins.users,
-    },
-  ];
+    path: roleRoutes.Admins.users,
+  },
+];
+
+userGroupMenuItems = [
+  {
+    id: "task-management",
+    label: "Task Management",
+    icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>`,
+    path: roleRoutes.Admins.default,
+  }
+];
+
+
+let userGroup = $user.userGroup;
+if(userGroup == "TeamMembers"){
+    menuItems = userGroupMenuItems;
+}else{
+    menuItems = adminMenuItems;
+}
+
+
+
 </script>
 
 <aside
@@ -45,7 +73,7 @@
           />
         </svg>
       </div>
-      <span class="text-xl font-bold text-gray-800">TaskMaster</span>
+      <span class="text-xl font-bold text-gray-800">Taskify :)</span>
     </div>
 
     <nav class="space-y-1">

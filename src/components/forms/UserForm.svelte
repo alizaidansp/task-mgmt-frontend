@@ -1,9 +1,11 @@
 <script>
     import { createEventDispatcher,onMount } from 'svelte';
     import { getUsers } from '../../lib/api';
+  import LoadingSpinner from '../../components/loaders/loading-spinner.svelte';
     
     export let editingUserId = null;
     export let users = [];
+    export let isLoading=false;
 
     export let user = {
         given_name: '',
@@ -70,7 +72,11 @@
             type="submit"
             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
+        {#if isLoading}
+        <LoadingSpinner />
+     {:else}
             {editingUserId ? 'Update User' : 'Create User'}
+            {/if}
         </button>
     </form>
 </div>

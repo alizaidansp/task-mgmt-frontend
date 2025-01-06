@@ -1,5 +1,4 @@
 <script>
-	import InfoToast from '../../components/toasts/InfoToast.svelte';
     import { onMount } from 'svelte';
     import {page, tasks,user,isAuthenticated } from '../../lib/store';
     import { listTasks, createTask, updateTask, deleteTask } from '../../lib/api';
@@ -8,9 +7,11 @@
     import Sidebar from '../../components/layout/Sidebar.svelte';
     import Header from '../../components/layout/Header.svelte';
     import { handleRoleRedirect } from '../../lib/utils/auth';
+	import InfoToast from '../../components/toasts/InfoToast.svelte';
 
 
     let users = [];
+    let isLoading=false;
     let editingTaskId = null;
     let assignedTo = null;
     let statusMessage = '';
@@ -21,7 +22,6 @@
         deadline: '',
         task_status: 'pending'
     };
-    let isLoading=false;
 
 
     onMount(async () => {
@@ -30,7 +30,7 @@
 
 
         // Now, handle the role-based redirect
-        handleRoleRedirect('default');
+        handleRoleRedirect('default'); // Assuming 'admin' is the required role for this component
         page.set('task-management'); // Update the page store
 
 
@@ -60,15 +60,11 @@ async function handleTaskSubmit(event) {
         $tasks = updatedTasks;
         statusMessage = 'Task successfully saved!';
         setTimeout(() => (statusMessage = ''), 3000);
-        
         resetForm();
     } catch (error) {
-
         console.error('Failed to save task:', error);
         statusMessage = 'Failed to save task!. Please try again.';
         setTimeout(() => (statusMessage = ''), 3000);
-
-
     }finally{
         isLoading=false;
     }
@@ -124,17 +120,11 @@ function resetForm() {
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-900">Task Management</h1>
-                    <button class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        New Task
-                    </button>
+                  
                 </div>
 
                <InfoToast
-               statusMessage={statusMessage}
-               />
+               statusMessage={statusMessage}  />      
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1">

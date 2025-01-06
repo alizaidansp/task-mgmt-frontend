@@ -16,6 +16,5 @@ export const roleRoutes = {
     },
     Guests: {
         login: '/login', // Default route for Guests
-        register: '/register',
     },
 };
