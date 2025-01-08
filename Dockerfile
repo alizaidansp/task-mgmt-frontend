@@ -19,15 +19,19 @@ RUN npm run build
 # Stage 2: Serve the built app using a lightweight server
 FROM nginx:alpine
 
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-# Copy the build output from the build stage to the NGINX web server's root directory
 
-# app/public is the output directory of the Svelte app after running npm run build
-
-COPY --from=build /app/public /usr/share/nginx/html
+# app/dist is the output directory of the Svelte app after running npm run build
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80 (default for HTTP)
 EXPOSE 80
 
 # Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
+
+# -g
+# sets the global configuration directive for NGINX
+
+
+# daemon off;
+# prevents NGINX from running in the background and keeps it running in the foreground
